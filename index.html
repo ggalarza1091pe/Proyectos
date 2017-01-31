@@ -1,0 +1,146 @@
+<html>
+	<head>
+
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<title></title>
+		
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+		
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		
+		<script type="text/javascript" src="js/jquery.animateNumber.min.js"></script>
+		
+		<script type="text/javascript">
+			$(document).ready(function (){
+				/*Funcion que evita el copiado, pegado y cortado dentro del input text*/
+				$("#numeros").on('keydown', function() {
+					var ctrl=window.event.ctrlKey;
+
+					var tecla=window.event.keyCode;
+
+					if (ctrl && tecla==67) {event.keyCode=0; event.returnValue=false;}
+
+					if (ctrl && tecla==86) {event.keyCode=0; event.returnValue=false;}
+					
+					if (ctrl && tecla==88) {event.keyCode=0; event.returnValue=false;}
+				});
+				/*Funcion encargada de permitir que solo se ingresen numeros al input text*/
+				$("#numeros").on("keypress", function(event) {
+					var keycode = window.event ? window.event.keyCode : e.which;
+					  
+					if (keycode == 8){
+						return true;
+					}
+					
+					if (keycode < 48 || keycode > 57){
+						return false;
+					}
+						
+					return noRepetidos(keycode);
+					
+					return /\d/.test(String.fromCharCode(keycode));
+					
+				});
+				/*funcion encargada de revisar que dentro del input text no existan numeros repetidos*/
+				function noRepetidos(keycode) {
+					texto = $("#numeros").val();
+					array = texto.split("");
+					if(array.length>0){
+						var ultimoNumero = String.fromCharCode(keycode);
+
+						for(var i = 0; i < array.length ; i++){
+							if (array[i] == ultimoNumero){
+								$("#numeros").val(texto);
+								return false;
+							}
+						}
+					}
+				};
+				
+				
+				 /*Con ayuda de un plugin llamado "jquery.animateNumber.min.js" se puede lograr la animacion en el momento de ordenar el numero ingresado*/
+				$("#btnOrdenar").on("click",function(event){
+					
+					var max_number = Math.pow(10,$("#numeros").val().length-1);
+				
+					var padding_zeros = '';
+					  for(var i = 0, l = max_number.toString().length; i < l; i++) {
+						padding_zeros += '0';
+					  }
+
+					  var padded_now, numberStep = function(now, tween) {
+						var target = $(tween.elem),
+							rounded_now = Math.round(now);
+
+						var rounded_now_string = rounded_now.toString()
+						padded_now = padding_zeros + rounded_now_string;
+						padded_now = padded_now.substring(rounded_now_string.length);
+
+						target.prop('number', rounded_now).text(padded_now);
+					  };
+					
+					
+					texto = $("#numeros").val();
+					array = texto.split("");
+					var animNumero = array.sort(deMenorAMayor).join("");
+					
+					$('#idResultado')
+					  .prop('number', Math.round(Math.random()*Math.pow(10,$("#numeros").val().length)))
+					  .animateNumber(
+						{
+							number: animNumero,
+							numberStep: numberStep
+						},
+						4000
+					);
+					
+					$("#idResultado").html(array.sort(deMenorAMayor));
+				});
+				
+				
+				function deMenorAMayor(elem1, elem2) {return elem1-elem2;}
+				
+			});
+			
+			
+		</script>
+		
+		<style type="text/css">
+			.col-centered{
+				float: none;
+				margin: 0 auto;
+			};
+		</style>
+		
+	</head>
+	
+	<body>
+
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-5 col-centered">
+					<form class="form-signin1">
+						<h3 class = "form-signin-heading">Ingresar Serie de N&uacute;meros</h3>
+						<input type="text" class="form-control" id="numeros" placeholder="0621857276"/>
+						<br/>
+						<a class="btn btn-lg btn-primary btn-block" href="#" id="btnOrdenar" role="button">Ordenar</a>
+						<br/>
+						<h2 id="idResultado"></h2>
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</body>
+	
+</html>
